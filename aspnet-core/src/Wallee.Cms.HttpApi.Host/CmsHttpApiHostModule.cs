@@ -46,7 +46,8 @@ namespace Wallee.Cms;
     typeof(AbpAspNetCoreMvcUiLeptonXLiteThemeModule),
     typeof(AbpAccountWebOpenIddictModule),
     typeof(AbpAspNetCoreSerilogModule),
-    typeof(AbpSwashbuckleModule)
+    typeof(AbpSwashbuckleModule),
+    typeof(AbpBlobStoringMinioModule)
 )]
 public class CmsHttpApiHostModule : AbpModule
 {
@@ -149,16 +150,17 @@ public class CmsHttpApiHostModule : AbpModule
 
     private void ConfigureBlogStoring(IConfiguration configuration)
     {
+
         Configure<AbpBlobStoringOptions>(options =>
         {
             options.Containers.Configure<MediaContainer>(container =>
             {
-                container.IsMultiTenant = true;
                 container.UseMinio(minio =>
                 {
                     minio.EndPoint = configuration["Blob:Minio:EndPoint"]!;
                     minio.AccessKey = configuration["Blob:Minio:AccessKey"]!;
                     minio.SecretKey = configuration["Blob:Minio:SecretKey"]!;
+                    minio.BucketName = BlobContainerNameAttribute.GetContainerName<MediaContainer>();
                     minio.CreateBucketIfNotExists = true;
                 });
             });

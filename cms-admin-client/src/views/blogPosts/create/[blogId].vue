@@ -7,8 +7,10 @@
             <v-spacer></v-spacer>
         </v-toolbar>
         <v-row justify="center" class="mt-5">
-            <v-form ref="createBlogPostFormRef" @submit="onSubmit">
+            <v-form ref="createBlogPostFormRef" v-model="createBlogPostFormValid" @submit.prevent="onSubmit">
                 <v-card>
+                    <v-img v-if="coverImageMedia" height="200px" aspect-ratio="16/9" cover :src="coverImageMedia"></v-img>
+
                     <v-card-title class="d-flex flex-row justify-space-between align-center">
                         <span class="text-h6 font-weight-bold">
                             编辑博客文章
@@ -57,7 +59,8 @@
 
             </v-form>
         </v-row>
-        <mediaUploader v-model:show="mediaUploaderDialog"></mediaUploader>
+        <mediaUploader v-model:show="mediaUploaderDialog" entity-type="BlogPost" @done="onCoverImageMediaUploaded">
+        </mediaUploader>
     </v-container>
 </template>
 
@@ -67,8 +70,9 @@ import { useCreateBlogPostForm } from '../hooks/createBlogPost';
 import { useGlobalStore } from '@/store/globalStore';
 import { SubmitEventPromise } from 'vuetify';
 import mediaUploader from '../components/mediaUploader.vue';
-import { BlogDto, BlogAdminService } from '@/openapi';
-
+import { BlogDto, BlogAdminService, MediaDescriptorService, MediaDescriptorDto } from '@/openapi';
+const createBlogPostFormValid = ref(false);
+const coverImageMedia = ref<string | undefined>(undefined);
 const createBlogPostFormRef = ref();
 const route = useRoute("blogPost.create");
 const blog = ref<BlogDto>();
@@ -88,6 +92,11 @@ const onSubmit = async (e: SubmitEventPromise) => {
     }
 }
 
+const onCoverImageMediaUploaded = (val: MediaDescriptorDto) => {
+    console.log(val);
+    form.coverImageMediaId = val.id;
+}
+
 
 const createSlug = (title: string) => {
     return title.normalize('NFD')
@@ -105,6 +114,19 @@ onMounted(async () => {
     blog.value = await BlogAdminService.blogAdminGet({ id: form.blogId });
 });
 
+//如果监测到封面变化，则重新加载封面，同时释放之前的URL
+watch(() => form.coverImageMediaId, async (val) => {
+    console.log(val);
+    if (coverImageMedia.value) {
+        URL.revokeObjectURL(coverImageMedia.value);
+        coverImageMedia.value = undefined;
+    }
+    if (val) {
+        const mediaBlob = await MediaDescriptorService.mediaDescriptorDownload({ id: val });
+        coverImageMedia.value = URL.createObjectURL(mediaBlob);
+    }
+    console.log(coverImageMedia.value);
+});
 </script>
 
 <style scoped></style>
