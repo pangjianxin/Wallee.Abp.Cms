@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\common.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Wallee.Cms</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Wallee.Cms.Domain.Shared\Wallee.Cms.Domain.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFilterer" Version="3.0.0-pre.1" />
+    <PackageReference Include="Volo.Abp.ObjectExtending" Version="8.0.0-rc.1" />
+    <PackageReference Include="Volo.Abp.Account.Application.Contracts" Version="8.0.0-rc.1" />
+    <PackageReference Include="Volo.Abp.Identity.Application.Contracts" Version="8.0.0-rc.1" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Application.Contracts" Version="8.0.0-rc.1" />
+    <PackageReference Include="Volo.Abp.TenantManagement.Application.Contracts" Version="8.0.0-rc.1" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.Application.Contracts" Version="8.0.0-rc.1" />
+    <PackageReference Include="Volo.Abp.SettingManagement.Application.Contracts" Version="8.0.0-rc.1" />
+    <PackageReference Include="Volo.CmsKit.Admin.Application.Contracts" Version="8.0.0-rc.1" />
+  </ItemGroup>
+
+</Project>

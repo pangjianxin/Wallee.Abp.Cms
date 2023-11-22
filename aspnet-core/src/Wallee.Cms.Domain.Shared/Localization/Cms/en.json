@@ -1,0 +1,13 @@
+{
+  "culture": "en",
+  "texts": {
+    "OrganizationUnit": "OrganizationUnit",
+    "Permission:Organization": "OrganizationUnit",
+    "Menu:OrganizationUnit": "OrganizationUnit",
+    "Permission:OrganizationUnits:ManageRoles": "ManageRoles",
+    "Permission:OrganizationUnits:ManageUsers": "ManageUsers",
+    "Permission:Create": "Create",
+    "Permission:Update": "Edit",
+    "Permission:Delete": "Remove"
+  }
+}
