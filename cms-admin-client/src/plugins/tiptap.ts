@@ -1,9 +1,9 @@
-import { markRaw } from "vue";
 import {
   VuetifyTiptap,
   VuetifyViewer,
   createVuetifyProTipTap,
 } from "vuetify-pro-tiptap";
+import { MediaDescriptorAdminService } from "@/openapi";
 import {
   BaseKit,
   Bold,
@@ -34,8 +34,7 @@ import {
   History,
 } from "vuetify-pro-tiptap";
 import "vuetify-pro-tiptap/style.css";
-import SelectImage from "@/components/tiptap/selectImage.vue";
-
+import { MediaDatabase } from "@/utils/dexie";
 export const vuetifyProTipTap = createVuetifyProTipTap({
   lang: "zhHans",
   components: {
@@ -45,7 +44,7 @@ export const vuetifyProTipTap = createVuetifyProTipTap({
   extensions: [
     BaseKit.configure({
       placeholder: {
-        placeholder: "Enter some text...",
+        placeholder: "此处输入内容...",
       },
     }),
     Bold,
@@ -67,12 +66,12 @@ export const vuetifyProTipTap = createVuetifyProTipTap({
     Indent.configure({ divider: true }),
     Link,
     Image.configure({
-      imageTabs: [{ name: "SELECT", component: markRaw(SelectImage) }],
-      // hiddenTabs: ['upload'],
-      upload(file: File) {
-        const url = URL.createObjectURL(file);
-        console.log("mock upload api :>> ", url);
-        return Promise.resolve(url);
+      async upload(file: File) {
+        const blob = URL.createObjectURL(file);
+        const mediaDB = new MediaDatabase();
+        const id = await mediaDB.medias.add({ id: blob, name: file.name });
+        console.log(id);
+        return blob;
       },
     }),
     Video,

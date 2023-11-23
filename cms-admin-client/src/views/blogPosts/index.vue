@@ -1,7 +1,7 @@
 <template>
     <div v-if="list">
         <template v-for="(item, index) in list" :key="index">
-            <span>{{ item.blogId }}</span>
+            <div>{{ item.blogId }}-{{ item.coverImageMediaId }}</div>
         </template>
     </div>
 </template>
