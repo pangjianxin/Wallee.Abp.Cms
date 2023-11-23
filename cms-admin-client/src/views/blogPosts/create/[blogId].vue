@@ -22,27 +22,9 @@
                         </v-card-subtitle>
                         <v-card-text>
                             <v-row justify="center">
-                                <v-col cols="12" v-if="form.coverImageMediaId">
+                                <v-col cols="12">
                                     <coverImage v-model="form.coverImageMediaId"></coverImage>
                                 </v-col>
-                                <v-col cols="12">
-                                    <v-file-input :multiple="false" v-model="coverImageMedias" label="文章封面(如无则可空)"
-                                        accept="image/*" variant="outlined" :show-size="1000" prepend-icon=""
-                                        prepend-inner-icon="mdi-paperclip">
-                                        <template v-slot:selection="{ fileNames }">
-                                            <template v-for="(fileName, index) in fileNames" :key="fileName">
-                                                <v-chip v-if="index < 2" color="deep-purple-accent-4" label size="small"
-                                                    class="me-2">
-                                                    {{ fileName }}
-                                                </v-chip>
-                                                <span v-else-if="index === 2" class="text-overline text-grey-darken-3 mx-2">
-                                                    +{{ coverImageMedias?.length! - 2 }} 个文件
-                                                </span>
-                                            </template>
-                                        </template>
-                                    </v-file-input>
-                                </v-col>
-
                                 <v-col cols="12">
                                     <v-text-field label="文章标题" placeholder="标题会直接显示在文章列表中" v-model="form.title"
                                         color="primary" variant="outlined" type="text" :rules="formRules.title"
@@ -101,6 +83,7 @@ const blog = ref<BlogDto>();
 
 const onSubmit = async (e: SubmitEventPromise) => {
     if ((await e).valid) {
+        console.log(form);
         const mediaDB = new MediaDatabase();
         try {
             setLoading(true);
@@ -109,14 +92,14 @@ const onSubmit = async (e: SubmitEventPromise) => {
                 for (let index = 0; index < medias.length; index++) {
                     const media = medias[index];
                     //如果文章内容有这个blobUrl，则进行后续操作
-                    if (form.content!.indexOf(media.id!) > -1) {
-                        //①获取blob
+                    if (form.content.indexOf(media.id!) > -1) {
+                        //1、获取blob
                         let blob = await (await fetch(media.id)).blob();
-                        //②上传blob
+                        //2、上传blob
                         const res = await uploadMedia(new File([blob], media.name));
-                        //③将indexedDB中的该条目标记为已上传
-                        await mediaDB.medias.put({ id: media.id, name: media.name, uploaded: true, mediaId: res.id }, media.id!);
-                        //④替换文章内容中的blobUrl为mediaUrl
+                        //3、将indexedDB中的该条目标记为已上传
+                        await mediaDB.medias.put({ ...media, uploaded: true });
+                        //4、替换文章内容中的blobUrl为mediaUrl
                         replaceContentMedia(res, media.id);
                     }
                 }
@@ -141,64 +124,24 @@ const onSubmit = async (e: SubmitEventPromise) => {
     }
 }
 
-
-
 const replaceContentMedia = async (media: MediaDescriptorDto, blobUrl: string) => {
     const mediaUrl = `${import.meta.env.VITE_MEDIA_URL}${media.id}`;
-    form.content = form.content?.replace(blobUrl, mediaUrl);
+    const regex = new RegExp(blobUrl, "g");
+    form.content = form.content?.replace(regex, mediaUrl);
 }
-
 
 const resetForm = () => {
     createBlogPostFormRef.value.reset();
     form.content = undefined;
-    coverImageMedias.value = undefined;
-    coverImageMediaUploaded.value = false;
-    URL.revokeObjectURL(previewImage.value!);
-    previewImage.value = undefined;
 }
-
-const removeCoverImageMedia = async () => {
-    try {
-        setLoading(true);
-        await removeMedia(form.coverImageMediaId!);
-        coverImageMediaUploaded.value = false;
-        setSnackbarText("删除成功");
-    } finally {
-        setLoading(false);
-    }
-}
-
-
 
 onMounted(async () => {
     form.blogId = route.params.blogId;
     blog.value = await BlogAdminService.blogAdminGet({ id: form.blogId });
 });
-
-//如果监测到封面变化，则重新加载封面，同时释放之前的URL
-watch(() => coverImageMedias.value?.[0], async (newVal) => {
-    URL.revokeObjectURL(previewImage.value!);
-    previewImage.value = undefined;
-    if (newVal) {
-        previewImage.value = URL.createObjectURL(newVal);
-    }
-}, {
-    deep: true
-});
 </script>
 
-<style scoped lang="scss">
-.v-card--reveal {
-    align-items: center;
-    bottom: 0;
-    justify-content: center;
-    opacity: .9;
-    position: absolute;
-    width: 100%;
-    z-index: 999;
-}
-</style>
+<style scoped lang="scss"></style>
 
 <route lang="yaml">
 name: blogPost.create
