@@ -1,5 +1,6 @@
 <template>
-    <v-container fluid>
+    <v-container fluid class="mb-0
+    ">
         <v-toolbar color="secondary" rounded>
             <v-toolbar-title>
                 写文章
@@ -7,7 +8,7 @@
             <v-spacer></v-spacer>
         </v-toolbar>
         <v-row justify="center">
-            <v-col cols="7">
+            <v-col cols="12" lg="7" md="10">
                 <v-form ref="createBlogPostFormRef" v-model="createBlogPostFormValid" @submit.prevent="onSubmit">
                     <v-card>
                         <v-card-title class="d-flex flex-row justify-space-between align-center">
@@ -26,35 +27,48 @@
                                     <coverImage v-model="form.coverImageMediaId"></coverImage>
                                 </v-col>
                                 <v-col cols="12">
-                                    <v-text-field label="文章标题" placeholder="标题会直接显示在文章列表中" v-model="form.title"
-                                        color="primary" variant="outlined" type="text" :rules="formRules.title"
-                                        prepend-inner-icon="mdi-tag-outline">
+                                    <v-text-field density="comfortable" label="文章标题" placeholder="标题会直接显示在文章列表中"
+                                        v-model="form.title" color="primary" variant="outlined" type="text"
+                                        :rules="formRules.title" prepend-inner-icon="mdi-tag-outline" validate-on="submit">
                                     </v-text-field>
                                 </v-col>
                                 <v-col cols="12">
-                                    <v-text-field label="文章SLUG" placeholder="SLUG能够更好的索引文章" v-model="form.slug"
-                                        color="primary" variant="outlined" type="text" :rules="formRules.slug"
-                                        prepend-inner-icon="mdi-tag-check-outline">
+                                    <v-text-field density="comfortable" label="文章SLUG" placeholder="SLUG能够更好的索引文章"
+                                        v-model="form.slug" color="primary" variant="outlined" type="text"
+                                        :rules="formRules.slug" prepend-inner-icon="mdi-tag-check-outline"
+                                        validate-on="submit">
                                     </v-text-field>
                                 </v-col>
 
                                 <v-col cols="12">
-                                    <v-textarea :auto-grow="true" :rows="2" label="文章短介绍" placeholder="文章短介绍能够更好的吸引读者"
-                                        v-model="form.shortDescription" color="primary" variant="outlined" type="text"
-                                        :rules="formRules.shortDescription" prepend-inner-icon="mdi-content-copy">
+                                    <v-textarea density="comfortable" :auto-grow="true" :rows="1" label="文章短介绍"
+                                        placeholder="文章短介绍能够更好的吸引读者" v-model="form.shortDescription" color="primary"
+                                        variant="outlined" type="text" :rules="formRules.shortDescription"
+                                        prepend-inner-icon="mdi-content-copy">
                                     </v-textarea>
                                 </v-col>
 
                                 <v-col cols="12">
-                                    <VuetifyTiptap v-model="form.content">
+                                    <VuetifyTiptap v-model="form.content" min-height="40vh">
+                                        <template #bottom>
+                                            <v-row justify="space-between" no-gutters align="center">
+                                                <v-btn-toggle v-model="operationType" mandatory>
+                                                    <v-btn prepend-icon="mdi-file-document-alert" value="draft">草稿</v-btn>
+                                                    <v-btn prepend-icon="mdi-file-document-edit" value="review">审核</v-btn>
+                                                    <v-btn prepend-icon="mdi-file-document-check" value="publish"
+                                                        v-permission="'CmsKit.BlogPosts.Publish'">
+                                                        发布
+                                                    </v-btn>
+                                                </v-btn-toggle>
+                                                <v-btn type="submit" variant="outlined">
+                                                    提交
+                                                </v-btn>
+                                            </v-row>
+                                        </template>
                                     </VuetifyTiptap>
                                 </v-col>
                             </v-row>
                         </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn type="submit" variant="outlined">提交</v-btn>
-                        </v-card-actions>
                     </v-card>
                 </v-form>
             </v-col>
@@ -66,24 +80,25 @@
 import { useRoute } from 'vue-router/auto';
 import { useCreateBlogPostForm } from '../hooks/createBlogPost';
 import { useGlobalStore } from '@/store/globalStore';
-import { SubmitEventPromise } from 'vuetify';
 import { BlogDto, BlogAdminService, MediaDescriptorDto } from '@/openapi';
 import { MediaDatabase } from '@/utils/dexie';
 import { useMediaManager } from '../hooks/mediaManager';
 import coverImage from '../components/coverImage.vue';
+import { SubmitEventPromise } from 'vuetify';
 
 const { setLoading, setSnackbarText } = useGlobalStore();
 const { uploadMedia, removeMedia } = useMediaManager();
-const { form, formRules, submit } = useCreateBlogPostForm();
+const { form, formRules, saveDraft, saveAndPublish, saveAndSendToReview } = useCreateBlogPostForm();
 
 const createBlogPostFormValid = ref(false);
 const createBlogPostFormRef = ref();
 const route = useRoute("blogPost.create");
 const blog = ref<BlogDto>();
+const operationType = ref<"draft" | "publish" | "review">("draft");
 
 const onSubmit = async (e: SubmitEventPromise) => {
+
     if ((await e).valid) {
-        console.log(form);
         const mediaDB = new MediaDatabase();
         try {
             setLoading(true);
@@ -104,7 +119,17 @@ const onSubmit = async (e: SubmitEventPromise) => {
                     }
                 }
             }
-            await submit();
+            switch (operationType.value) {
+                case "draft":
+                    await saveDraft();
+                    break;
+                case "publish":
+                    await saveAndPublish();
+                    break;
+                case "review":
+                    await saveAndSendToReview();
+                    break;
+            }
             await mediaDB.medias.clear();
             resetForm();
             setSnackbarText("文章创建成功");

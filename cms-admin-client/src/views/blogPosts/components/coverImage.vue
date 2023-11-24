@@ -24,8 +24,8 @@
             <v-img :src="coverImagePreview" height="200px" aspect-ratio="16/9" cover></v-img>
         </v-card>
     </v-hover>
-    <v-file-input :multiple="false" v-model="coverImageMedias" label="文章封面(如无则可空)" accept="image/*" variant="outlined"
-        :show-size="1000" prepend-icon="" prepend-inner-icon="mdi-paperclip" class="mt-3">
+    <v-file-input density="comfortable" :multiple="false" v-model="coverImageMedias" label="文章封面(如无则可空)" accept="image/*"
+        variant="outlined" :show-size="1000" prepend-icon="" prepend-inner-icon="mdi-paperclip" class="mt-3">
         <template v-slot:selection="{ fileNames }">
             <template v-for="(fileName, index) in fileNames" :key="fileName">
                 <v-chip v-if="index < 2" color="deep-purple-accent-4" label size="small" class="me-2">

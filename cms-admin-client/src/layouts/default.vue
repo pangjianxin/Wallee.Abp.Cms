@@ -46,7 +46,7 @@
             <router-view>
             </router-view>
         </v-main>
-        <bottomMenuVue :menus="menuList.bottomMenuList"></bottomMenuVue>
+        <!-- <bottomMenuVue :menus="menuList.bottomMenuList"></bottomMenuVue> -->
         <v-snackbar v-model="snackbar" :color="snackbarColor">
             {{ snackbarText }}
             <template #actions>

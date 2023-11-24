@@ -1,24 +1,26 @@
 import { BlogFeatureAdminService, BlogFeatureInputDto } from "@/openapi";
 
 export const useEditBlogFeature = () => {
-  const blogId = ref<string>("");
-
   const form = ref<BlogFeatureInputDto[]>([]);
 
-  const fetchFeatures = async () => {
+  const fetchFeatures = async (blogId: string) => {
     const res = await BlogFeatureAdminService.blogFeatureAdminGetList({
-      blogId: blogId.value,
+      blogId: blogId,
     });
     form.value = res.map((it) => {
       return { featureName: it.featureName!, isEnabled: it.isEnabled };
     });
   };
 
-  const submit = async () => {
-    await BlogFeatureAdminService.blogFeatureAdminSet({
-      blogId: blogId.value,
+  const submit = async (blogId: string) => {
+    if (form.value.length === 0) return;
+    form.value.forEach(async (it) => {
+      await BlogFeatureAdminService.blogFeatureAdminSet({
+        blogId: blogId,
+        requestBody: it,
+      });
     });
   };
 
-  return { blogId, form, fetchFeatures, submit };
+  return { form, fetchFeatures, submit };
 };

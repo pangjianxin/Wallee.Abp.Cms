@@ -2,6 +2,7 @@ import {
   BlogPostAdminService,
   CreateBlogPostDto,
 } from "@/openapi";
+import { b } from "unplugin-vue-router/dist/options-8dbadba3";
 
 export const useCreateBlogPostForm = () => {
   const form = reactive<CreateBlogPostDto>({
@@ -43,9 +44,21 @@ export const useCreateBlogPostForm = () => {
     coverImageMediaId: [],
   };
 
-  const submit = async () => {
+  const saveAndPublish = async () => {
+    await BlogPostAdminService.blogPostAdminCreateAndPublish({
+      requestBody: form,
+    });
+  };
+
+  const saveDraft = async () => {
     await BlogPostAdminService.blogPostAdminCreate({ requestBody: form });
   };
 
-  return { form, formRules, submit };
+  const saveAndSendToReview = async () => {
+    await BlogPostAdminService.blogPostAdminCreateAndSendToReview({
+      requestBody: form,
+    });
+  };
+
+  return { form, formRules, saveAndPublish, saveDraft, saveAndSendToReview };
 };

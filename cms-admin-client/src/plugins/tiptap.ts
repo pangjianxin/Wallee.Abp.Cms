@@ -3,7 +3,6 @@ import {
   VuetifyViewer,
   createVuetifyProTipTap,
 } from "vuetify-pro-tiptap";
-import { MediaDescriptorAdminService } from "@/openapi";
 import {
   BaseKit,
   Bold,
@@ -14,7 +13,7 @@ import {
   Highlight,
   Heading,
   TextAlign,
-  FontFamily,
+  //FontFamily,
   FontSize,
   SubAndSuperScript,
   BulletList,
@@ -30,7 +29,6 @@ import {
   Code,
   CodeBlock,
   Clear,
-  Fullscreen,
   History,
 } from "vuetify-pro-tiptap";
 import "vuetify-pro-tiptap/style.css";
@@ -54,16 +52,16 @@ export const vuetifyProTipTap = createVuetifyProTipTap({
     Code.configure({ divider: true }),
     Heading,
     TextAlign,
-    FontFamily,
+    //FontFamily,
     FontSize,
     Color,
     Highlight.configure({ divider: true }),
-    SubAndSuperScript.configure({ divider: true }),
+    //SubAndSuperScript.configure({ divider: true }),
     Clear.configure({ divider: true }),
     BulletList,
     OrderedList,
-    TaskList,
-    Indent.configure({ divider: true }),
+    TaskList.configure({ divider: true }),
+    //Indent.configure({ divider: true }),
     Link,
     Image.configure({
       async upload(file: File) {
@@ -80,6 +78,5 @@ export const vuetifyProTipTap = createVuetifyProTipTap({
     HorizontalRule,
     CodeBlock.configure({ divider: true }),
     History.configure({ divider: true }),
-    Fullscreen,
   ],
 });

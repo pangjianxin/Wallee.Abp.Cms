@@ -1,6 +1,6 @@
 <template>
-    <v-dialog transition="dialog-top-transition" :fullscreen="themeStore.mobile" :model-value="show" :persistent="true"
-        :scrollable="true">
+    <v-dialog transition="dialog-top-transition" :fullscreen="themeStore.mobile" width="auto" :model-value="show"
+        :persistent="true" :scrollable="true">
         <v-form v-model="editBlogFormValid" ref="editBlogFormRef" @submit.prevent="onSubmit">
             <v-card>
                 <v-card-title>
@@ -12,12 +12,18 @@
                     </span>
                 </v-card-subtitle>
                 <v-card-text>
-                    <v-text-field label="博客名称" v-model="form.name" color="primary" variant="outlined" type="text"
-                        :rules="formRules.name">
-                    </v-text-field>
-                    <v-text-field label="博客SLUG" v-model="form.slug" color="primary" variant="outlined" type="text"
-                        :rules="formRules.slug">
-                    </v-text-field>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-text-field label="博客名称" v-model="form.name" color="primary" variant="outlined" type="text"
+                                :rules="formRules.name">
+                            </v-text-field>
+                        </v-col>
+                        <v-col cols="12">
+                            <v-text-field label="博客SLUG" v-model="form.slug" color="primary" variant="outlined" type="text"
+                                :rules="formRules.slug">
+                            </v-text-field>
+                        </v-col>
+                    </v-row>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>

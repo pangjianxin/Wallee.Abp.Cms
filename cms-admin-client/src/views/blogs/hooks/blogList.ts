@@ -1,7 +1,7 @@
 import { BlogAdminService, BlogDto } from "@/openapi";
 export const useBlogList = () => {
   const loading = ref(false);
-  const blogsCache = ref<BlogDto[]>([]);
+  const list = ref<BlogDto[]>([]);
   const filter = ref("");
   const pageable = reactive<Pageable>({
     pageNum: 0,
@@ -9,26 +9,44 @@ export const useBlogList = () => {
     total: 0,
   });
 
+  const headers = [
+    {
+      title: "博客名称",
+      sortable: true,
+      key: "name",
+    },
+    {
+      title: "博客SLUG",
+      sortable: true,
+      key: "slug",
+    },
+    {
+      title: "操作",
+      sortable: false,
+      key: "actions",
+    },
+  ];
+
   const onDataChanged = (
     val: BlogDto,
     action: "create" | "remove" | "edit"
   ) => {
     if (action === "create") {
-      blogsCache.value.unshift(val);
+      list.value.unshift(val);
     } else if (action === "edit") {
-      const index = blogsCache.value.findIndex((x) => x.id === val.id);
+      const index = list.value.findIndex((x) => x.id === val.id);
       if (index >= 0) {
-        blogsCache.value.splice(index, 1, val);
+        list.value.splice(index, 1, val);
       }
     } else if (action === "remove") {
-      const index = blogsCache.value.findIndex((x) => x.id === val.id);
+      const index = list.value.findIndex((x) => x.id === val.id);
       if (index >= 0) {
-        blogsCache.value.splice(index, 1);
+        list.value.splice(index, 1);
       }
     }
   };
 
-  const getBlogs = async () => {
+  const getList = async () => {
     try {
       loading.value = true;
       const res = await BlogAdminService.blogAdminGetList({
@@ -37,7 +55,7 @@ export const useBlogList = () => {
         maxResultCount: pageable.pageSize,
       });
 
-      blogsCache.value = (res.items || []).concat(blogsCache.value || []);
+      list.value = res.items!;
       pageable.total = res.totalCount!;
       return res.items?.length || 0;
     } finally {
@@ -45,10 +63,5 @@ export const useBlogList = () => {
     }
   };
 
-  const scrollBlogs = async (pageNum: number) => {
-    pageable.pageNum += pageNum;
-    return await getBlogs();
-  };
-
-  return { loading, blogsCache, filter, pageable, onDataChanged, scrollBlogs };
+  return { loading, headers, list, filter, pageable, onDataChanged, getList };
 };

@@ -10,7 +10,11 @@
                 <div class="text-warning">删除后将无法恢复</div>
             </v-card-subtitle>
             <v-card-text>
-                即将删除<span class="text-warning">{{ blog?.name }}博客</span>
+                即将删除<span class="text-red">
+                    <span class="text-warning">{{ blogPost?.blogName }}</span>
+                    博客中的
+                    {{ blogPost?.title }}
+                </span>
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
@@ -27,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { BlogDto, BlogAdminService } from '@/openapi';
+import { BlogPostAdminService, BlogPostListDto } from '@/openapi';
 import { PropType } from 'vue';
 import { SubmitEventPromise } from 'vuetify';
 
@@ -36,8 +40,8 @@ const props = defineProps({
         type: Boolean,
         required: true
     },
-    blog: {
-        type: Object as PropType<BlogDto>,
+    blogPost: {
+        type: Object as PropType<BlogPostListDto>,
         required: false
     },
 });
@@ -50,8 +54,8 @@ const closeDialog = () => {
 
 const onDelete = async (e: SubmitEventPromise) => {
     e.preventDefault();
-    await BlogAdminService.blogAdminDelete({ id: props.blog?.id! });
-    emits("done", props.blog, "remove");
+    await BlogPostAdminService.blogPostAdminDelete({ id: props.blogPost?.id! });
+    emits("done", true);
     emits("update:show", false);
 }
 </script>

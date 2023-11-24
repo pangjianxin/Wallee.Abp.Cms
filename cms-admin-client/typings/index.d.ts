@@ -28,6 +28,7 @@ declare type MenuInfo = {
 };
 
 declare type Pageable = {
+  filter?: string;
   pageNum: number;
   pageSize: number;
   total: number;
