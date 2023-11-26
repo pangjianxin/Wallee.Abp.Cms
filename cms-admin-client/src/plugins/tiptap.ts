@@ -15,11 +15,11 @@ import {
   TextAlign,
   //FontFamily,
   FontSize,
-  SubAndSuperScript,
+  //SubAndSuperScript,
   BulletList,
   OrderedList,
   TaskList,
-  Indent,
+  //Indent,
   Link,
   Image,
   Video,
@@ -67,8 +67,7 @@ export const vuetifyProTipTap = createVuetifyProTipTap({
       async upload(file: File) {
         const blob = URL.createObjectURL(file);
         const mediaDB = new MediaDatabase();
-        const id = await mediaDB.medias.add({ id: blob, name: file.name });
-        console.log(id);
+        await mediaDB.mediasToBeUploaded.add({ blob: blob, name: file.name });
         return blob;
       },
     }),

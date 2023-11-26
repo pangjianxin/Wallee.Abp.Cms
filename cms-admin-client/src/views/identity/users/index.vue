@@ -96,7 +96,6 @@
 
 <script setup lang="ts">
 import create from "./components/create.vue";
-
 import { useIdentityUserList } from '@/views/identity/users/hooks/identityUserList';
 import edit from "@/views/identity/users/components/edit.vue";
 import remove from '@/views/identity/users/components/delete.vue';

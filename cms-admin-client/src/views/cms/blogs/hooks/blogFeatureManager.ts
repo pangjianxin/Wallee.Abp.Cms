@@ -1,6 +1,6 @@
 import { BlogFeatureAdminService, BlogFeatureInputDto } from "@/openapi";
 
-export const useEditBlogFeature = () => {
+export const useBlogFeatureManager = () => {
   const form = ref<BlogFeatureInputDto[]>([]);
 
   const fetchFeatures = async (blogId: string) => {

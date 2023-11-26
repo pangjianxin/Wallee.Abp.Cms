@@ -27,23 +27,13 @@ export const useBlogList = () => {
     },
   ];
 
-  const onDataChanged = (
-    val: BlogDto,
-    action: "create" | "remove" | "edit"
+  const onDataChanged = async (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _val: BlogDto,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _action: "create" | "remove" | "edit"
   ) => {
-    if (action === "create") {
-      list.value.unshift(val);
-    } else if (action === "edit") {
-      const index = list.value.findIndex((x) => x.id === val.id);
-      if (index >= 0) {
-        list.value.splice(index, 1, val);
-      }
-    } else if (action === "remove") {
-      const index = list.value.findIndex((x) => x.id === val.id);
-      if (index >= 0) {
-        list.value.splice(index, 1);
-      }
-    }
+    await getList();
   };
 
   const getList = async () => {

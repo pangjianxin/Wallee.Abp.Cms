@@ -1,8 +1,4 @@
-import {
-  BlogPostAdminService,
-  CreateBlogPostDto,
-} from "@/openapi";
-import { b } from "unplugin-vue-router/dist/options-8dbadba3";
+import { BlogPostAdminService, CreateBlogPostDto } from "@/openapi";
 
 export const useCreateBlogPostForm = () => {
   const form = reactive<CreateBlogPostDto>({
@@ -45,17 +41,19 @@ export const useCreateBlogPostForm = () => {
   };
 
   const saveAndPublish = async () => {
-    await BlogPostAdminService.blogPostAdminCreateAndPublish({
+    return await BlogPostAdminService.blogPostAdminCreateAndPublish({
       requestBody: form,
     });
   };
 
   const saveDraft = async () => {
-    await BlogPostAdminService.blogPostAdminCreate({ requestBody: form });
+    return await BlogPostAdminService.blogPostAdminCreate({
+      requestBody: form,
+    });
   };
 
   const saveAndSendToReview = async () => {
-    await BlogPostAdminService.blogPostAdminCreateAndSendToReview({
+    return await BlogPostAdminService.blogPostAdminCreateAndSendToReview({
       requestBody: form,
     });
   };

@@ -22,7 +22,7 @@
             :items="list" :loading="loading" item-value="name" @update:options="onPageOptionUpdated"
             items-per-page-text="每页">
             <template #[`item.actions`]="{ item }">
-                <v-menu :open-on-hover="true">
+                <v-menu>
                     <template #activator="{ props }">
                         <v-btn size="small" color="primary" variant="tonal" prepend-icon="mdi-menu" v-bind="props">
                             菜单
@@ -72,7 +72,7 @@
 
         <create-blog v-model:show="createBlogDialog" @done="onDataChanged">
         </create-blog>
-        
+
         <edit-blog v-model:show="editBlogDialog" :id="editBlogDialogParams" @done="onDataChanged">
         </edit-blog>
 

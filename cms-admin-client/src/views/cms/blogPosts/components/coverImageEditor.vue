@@ -1,5 +1,5 @@
 <template>
-    <v-hover v-slot="{ isHovering, props }" v-if="coverImagePreview">
+    <v-hover v-slot="{ isHovering, props }" v-if="coverImageUrl">
         <v-card class="mx-auto" v-bind="props">
             <v-expand-transition>
                 <div v-if="isHovering"
@@ -21,7 +21,7 @@
                     </template>
                 </div>
             </v-expand-transition>
-            <v-img :src="coverImagePreview" height="200px" aspect-ratio="16/9" cover></v-img>
+            <v-img :src="coverImageUrl" height="200px" aspect-ratio="16/9" cover></v-img>
         </v-card>
     </v-hover>
     <v-file-input density="comfortable" :multiple="false" v-model="coverImageMedias" label="文章封面(如无则可空)" accept="image/*"
@@ -50,7 +50,16 @@ const { setLoading, setSnackbarText } = useGlobalStore();
 
 const coverImageMedias = ref<File[] | undefined>(undefined);
 const coverImageMediaUploaded = ref(false);
-const coverImagePreview = ref<string | undefined>();
+
+const coverImageUrl = computed(() => {
+    if (props.modelValue) {
+        return `${import.meta.env.VITE_MEDIA_URL}${props.modelValue}`;
+    }
+    if (coverImageMedias.value && coverImageMedias.value.length > 0) {
+        return URL.createObjectURL(coverImageMedias.value[0]);
+    }
+    return undefined;
+});
 
 const props = defineProps({
     modelValue: {
@@ -86,26 +95,16 @@ const removeCoverImageMedia = async () => {
     }
 }
 
-watch(() => coverImageMedias.value, (val) => {
-    if (coverImagePreview.value) {
-        URL.revokeObjectURL(coverImagePreview.value!);
+watch(() => coverImageUrl.value, (newVal, oldVal) => {
+    if (oldVal?.startsWith("blob:")) {
+        URL.revokeObjectURL(oldVal);
     }
-    if (val && val.length > 0) {
-        coverImagePreview.value = URL.createObjectURL(val[0]);
+    if (newVal && !newVal?.startsWith("blob:")) {
+        coverImageMediaUploaded.value = true;
     } else {
-        coverImagePreview.value = undefined;
-    }
-}, { deep: true });
-
-//当父组件表单重置，传入的modelValue为undefined时，清空当前组件的状态
-watch(() => props.modelValue, async (val) => {
-    if (!val) {
-        URL.revokeObjectURL(coverImagePreview.value!);
-        coverImageMedias.value = undefined;
-        coverImagePreview.value = undefined;
         coverImageMediaUploaded.value = false;
     }
-});
+})
 </script>
 <style scoped lang="scss">
 .v-card--reveal {

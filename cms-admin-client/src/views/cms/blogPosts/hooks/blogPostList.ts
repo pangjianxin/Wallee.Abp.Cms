@@ -50,19 +50,25 @@ export const useBlogPostList = () => {
     },
     {
       title: "操作",
+      sortable: false,
       key: "actions",
     },
   ];
   const getList = async () => {
-    const res = await BlogPostAdminService.blogPostAdminGetList({
-      filter: pageable.filter,
-      sorting: pageable.sorting,
-      skipCount: (pageable.pageNum - 1) * pageable.pageSize,
-      maxResultCount: pageable.pageSize,
-    });
+    try {
+      loading.value = true;
+      const res = await BlogPostAdminService.blogPostAdminGetList({
+        filter: pageable.filter,
+        sorting: pageable.sorting,
+        skipCount: (pageable.pageNum - 1) * pageable.pageSize,
+        maxResultCount: pageable.pageSize,
+      });
 
-    list.value = res.items!;
-    pageable.total = res.totalCount!;
+      list.value = res.items!;
+      pageable.total = res.totalCount!;
+    } finally {
+      loading.value = false;
+    }
   };
 
   watchDebounced(

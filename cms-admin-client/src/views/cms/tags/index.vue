@@ -22,45 +22,29 @@
             :items="list" :loading="loading" item-value="name" @update:options="onPageOptionUpdated"
             items-per-page-text="每页">
 
-            <template #[`item.title`]="{ value }">
+            <template #[`item.entityType`]="{ value }">
                 <span class="text-body-2">{{ value }}</span>
             </template>
 
-            <template #[`item.slug`]="{ value }">
-                <span class="text-body-2">{{ value }}</span>
-            </template>
-
-            <template #[`item.status`]="{ value }">
-                <v-chip variant="outlined">
-                    {{ BlogPostStatus[value] }}
-                </v-chip>
-            </template>
-
-            <template #[`item.blogName`]="{ value }">
+            <template #[`item.name`]="{ value }">
                 <span class="text-body-2">{{ value }}</span>
             </template>
 
             <template #[`item.creationTime`]="{ value }">
-                <span class="text-body-2"> {{ dayjs(value).format("YYYY年MM月DD日") }}</span>
+                <v-chip variant="outlined">
+                    {{ dayjs(value).format("YYYY/MM/DD") }}
+                </v-chip>
             </template>
 
-            <template #[`item.shortDescription`]="{ value }">
-                <v-tooltip :text="value" location="top">
-                    <template #activator="{ props }">
-                        <div class="text-truncate text-body-2" style="max-width: 130px;" v-bind="props">{{ value }}</div>
-                    </template>
-                </v-tooltip>
-
-            </template>
             <template #[`item.menu`]="{ item }">
-                <v-menu :open-on-hover="true">
+                <v-menu>
                     <template #activator="{ props }">
                         <v-btn size="small" color="primary" variant="tonal" prepend-icon="mdi-menu" v-bind="props">
                             菜单
                         </v-btn>
                     </template>
                     <v-list nav lines="one">
-                        <v-list-item density="compact">
+                        <v-list-item density="compact" @click="onEditTagDialogOPen(item.id!)">
                             <template #title>
                                 <span>更新</span>
                             </template>
@@ -68,7 +52,7 @@
                                 <v-icon>mdi-cog-outline</v-icon>
                             </template>
                         </v-list-item>
-                        <v-list-item density="compact" @click="onRemoveBlogDialogOpen(item)">
+                        <v-list-item density="compact" @click="onRemoveTagDialogOpen(item)">
                             <template #title>
                                 <span>删除</span>
                             </template>
@@ -76,41 +60,34 @@
                                 <v-icon>mdi-delete-outline</v-icon>
                             </template>
                         </v-list-item>
-                        <v-list-item v-if="item.status === BlogPostStatus.Draft" v-permission="'CmsKit.BlogPosts.Publish'"
-                            density="compact">
-                            <template #title>
-                                <span>发布</span>
-                            </template>
-                            <template #prepend>
-                                <v-icon>mdi-file-document-check</v-icon>
-                            </template>
-                        </v-list-item>
                     </v-list>
                 </v-menu>
             </template>
-            <template #[`item.actions`]="{ item }">
-                <v-btn density="compact" variant="text" icon="mdi-feature-search-outline" @click="gotoBlogPost(item.id!)">
-                </v-btn>
-            </template>
         </v-data-table-server>
-
-        <remove v-model:show="removeBlogPostDialog" :blog-post="removeBlogPostDialogParams" @done="onDataChanged"></remove>
+        <editTag v-model:show="editTagDialog" :tag-id="editTagDialogParams" @done="onDataChanged"></editTag>
+        <removeTag v-model:show="removeTagDialog" :tag="removeTagDialogParams!" @done="onDataChanged"></removeTag>
     </v-container>
 </template>
 
 <script setup lang="ts">
 import dayjs from 'dayjs';
-import { useBlogPostList } from './hooks/blogPostList';
-import remove from './components/remove.vue';
-import { BlogPostListDto, BlogPostStatus } from '@/openapi';
-
-const router = useRouter();
-//删除博客文章
-const removeBlogPostDialog = ref(false);
-const removeBlogPostDialogParams = ref<BlogPostListDto>();
-const onRemoveBlogDialogOpen = (blogPost: BlogPostListDto) => {
-    removeBlogPostDialogParams.value = blogPost;
-    removeBlogPostDialog.value = true;
+import { useTagsList } from './hooks/tagsList';
+import { TagDto } from '@/openapi';
+import editTag from './components/edit.vue';
+import removeTag from './components/remove.vue';
+//删除Tag对话框
+const removeTagDialog = ref(false);
+const removeTagDialogParams = ref<TagDto>();
+const onRemoveTagDialogOpen = (blogPost: TagDto) => {
+    removeTagDialogParams.value = blogPost;
+    removeTagDialog.value = true;
+}
+//更新Tag对话框
+const editTagDialog = ref(false);
+const editTagDialogParams = ref<string>();
+const onEditTagDialogOPen = (tagId: string) => {
+    editTagDialogParams.value = tagId;
+    editTagDialog.value = true;
 }
 //搜索栏位
 const searchBarActivated = ref(false);
@@ -121,7 +98,11 @@ const toggleSearchBar = () => {
     }
 }
 
-const { loading, getList, headers, list, pageable } = useBlogPostList();
+const { loading, getList, headers, list, pageable } = useTagsList();
+
+const onDataChanged = async () => {
+    await getList();
+}
 
 const onPageOptionUpdated = async ({
     page,
@@ -140,16 +121,6 @@ const onPageOptionUpdated = async ({
     await getList();
 };
 
-const onDataChanged = async (val: boolean) => {
-    if (val) {
-        await getList();
-    }
-}
-
-const gotoBlogPost = async (blogPostId: string) => {
-    await router.push({ name: "blogPost.detail", params: { blogPostId: blogPostId } });
-}
-
 onMounted(async () => {
     await getList();
 });
@@ -158,11 +129,11 @@ onMounted(async () => {
 <style scoped></style>
 
 <route lang="yaml">
-name: blogPost.index
+name: tag.index
 meta: 
   visible: true
   auth: true
-  title: 文章管理
+  title: 标签管理
   desc: 博客管理
-  icon: mdi-post-outline
+  icon: mdi-tag-arrow-down-outline
 </route>

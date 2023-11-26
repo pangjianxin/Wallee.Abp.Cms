@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { useThemeStore } from '@/store/themeStore';
-import { useEditBlogFeature } from '../hooks/eidtBlogFeature';
+import { useBlogFeatureManager } from '../hooks/blogFeatureManager';
 import { SubmitEventPromise } from 'vuetify/lib/framework.mjs';
 import { useGlobalStore } from '@/store/globalStore';
 const themeStore = useThemeStore();
@@ -50,7 +50,7 @@ const props = defineProps({
 });
 const emits = defineEmits(["update:show", "done"]);
 
-const { fetchFeatures, form, submit } = useEditBlogFeature();
+const { fetchFeatures, form, submit } = useBlogFeatureManager();
 
 watch(() => props.show, async val => {
     if (val) {
@@ -74,4 +74,4 @@ const onSubmit = async (e: SubmitEventPromise) => {
 }
 </script>
 
-<style scoped></style>
+<style scoped></style>../hooks/blogFeatureManager

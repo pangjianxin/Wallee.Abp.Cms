@@ -1,5 +1,5 @@
-﻿using Wallee.Cms.Localization;
-using Volo.Abp.AspNetCore.Mvc;
+﻿using Volo.Abp.AspNetCore.Mvc;
+using Wallee.Cms.Localization;
 
 namespace Wallee.Cms;
 
