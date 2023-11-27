@@ -47,6 +47,7 @@ declare module 'vue-router/auto/routes' {
     'blogPost.create': RouteRecordInfo<'blogPost.create', '/cms/blogPosts/create/:blogId', { blogId: ParamValue<true> }, { blogId: ParamValue<false> }>,
     'blogPost.edit': RouteRecordInfo<'blogPost.edit', '/cms/blogPosts/edit/:blogPostId', { blogPostId: ParamValue<true> }, { blogPostId: ParamValue<false> }>,
     'blog.index': RouteRecordInfo<'blog.index', '/cms/blogs', Record<never, never>, Record<never, never>>,
+    'comment.index': RouteRecordInfo<'comment.index', '/cms/comments', Record<never, never>, Record<never, never>>,
     'tag.index': RouteRecordInfo<'tag.index', '/cms/tags', Record<never, never>, Record<never, never>>,
     'identity.organization-unit.index': RouteRecordInfo<'identity.organization-unit.index', '/identity/organizationUnits', Record<never, never>, Record<never, never>>,
     'identity.role.index': RouteRecordInfo<'identity.role.index', '/identity/roles', Record<never, never>, Record<never, never>>,

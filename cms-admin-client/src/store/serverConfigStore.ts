@@ -29,6 +29,12 @@ export const useServerConfigStore = defineStore(
       return state.auth?.grantedPolicies![permissionName] !== undefined;
     };
 
+    const featureEnabled = (featureName: string) => {
+      if (state.features?.values) {
+        return state.features.values[featureName] === "true";
+      }
+    };
+
     const localization = computed<
       ApplicationLocalizationConfigurationDto | undefined
     >(() => state.localization);
@@ -81,6 +87,7 @@ export const useServerConfigStore = defineStore(
       currentTenant,
       currentUser,
       isAuthenticated,
+      featureEnabled,
       isPermitted,
       initConfig,
     };

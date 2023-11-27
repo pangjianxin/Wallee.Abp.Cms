@@ -31,7 +31,7 @@
             </template>
 
             <template #[`item.status`]="{ value }">
-                <v-chip variant="outlined">
+                <v-chip density="compact" color="primary" variant="tonal">
                     {{ BlogPostStatus[value] }}
                 </v-chip>
             </template>
@@ -77,7 +77,7 @@
                             </template>
                         </v-list-item>
                         <v-list-item v-if="item.status === BlogPostStatus.Draft" v-permission="'CmsKit.BlogPosts.Publish'"
-                            density="compact">
+                            @click="onPublishBlogDialogOpen(item)" density="compact">
                             <template #title>
                                 <span>发布</span>
                             </template>
@@ -94,7 +94,12 @@
             </template>
         </v-data-table-server>
 
-        <remove v-model:show="removeBlogPostDialog" :blog-post="removeBlogPostDialogParams" @done="onDataChanged"></remove>
+        <remove v-model:show="removeBlogPostDialog" :blog-post="removeBlogPostDialogParams" @done="onDataChanged">
+        </remove>
+
+        <publish v-model:show="publishBlogPostDialog" :blog-post="publishBlogPostDialogParams" @done="onDataChanged">
+        </publish>
+
     </v-container>
 </template>
 
@@ -103,6 +108,7 @@ import dayjs from 'dayjs';
 import { useBlogPostList } from './hooks/blogPostList';
 import remove from './components/remove.vue';
 import { BlogPostListDto, BlogPostStatus } from '@/openapi';
+import publish from './components/publish.vue';
 
 const router = useRouter();
 //删除博客文章
@@ -111,6 +117,14 @@ const removeBlogPostDialogParams = ref<BlogPostListDto>();
 const onRemoveBlogDialogOpen = (blogPost: BlogPostListDto) => {
     removeBlogPostDialogParams.value = blogPost;
     removeBlogPostDialog.value = true;
+}
+
+//发布博客文章
+const publishBlogPostDialog = ref(false);
+const publishBlogPostDialogParams = ref<BlogPostListDto>();
+const onPublishBlogDialogOpen = (blogPost: BlogPostListDto) => {
+    publishBlogPostDialogParams.value = blogPost;
+    publishBlogPostDialog.value = true;
 }
 //搜索栏位
 const searchBarActivated = ref(false);
