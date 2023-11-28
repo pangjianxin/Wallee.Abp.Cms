@@ -14,8 +14,8 @@
                 <v-card-text>
                     <v-row>
                         <v-col cols="12">
-                            <v-text-field label="博客名称" v-model="form.name" color="primary" variant="outlined" type="text"
-                                :rules="formRules.name">
+                            <v-text-field label="博客名称" v-model="form.name" :autofocus="true" color="primary"
+                                variant="outlined" type="text" :rules="formRules.name">
                             </v-text-field>
                         </v-col>
                         <v-col cols="12">
